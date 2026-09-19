@@ -32,7 +32,7 @@ The system supports:
 
 ## Architecture
 
-``` text
+
                     ┌──────────────────────┐
                     │      React UI        │
                     │   React + Vite       │
@@ -60,7 +60,7 @@ The system supports:
                     │ Tasks                │
                     │ Audit Logs           │
                     └──────────────────────┘
-```
+
 
 ## Technology Stack
 
@@ -198,7 +198,7 @@ Tracked operations include:
 
 ## Security Model
 
-``` text
+
 Client
   │
   ▼
@@ -218,7 +218,7 @@ Service-Level Authorization
   │
   ▼
 Tenant-Scoped Database Query
-```
+
 
 This layered approach prevents relying solely on frontend authorization.
 
@@ -228,7 +228,7 @@ PostgreSQL is used as the primary database.
 
 Main entities include:
 
-``` text
+
 Organization
     │
     ├── Users
@@ -242,7 +242,7 @@ Organization
 Organization
     │
     └── Audit Logs
-```
+
 
 Flyway manages database migrations.
 
@@ -263,24 +263,24 @@ The backend contains integration tests covering:
 
 Latest verification:
 
-``` text
+
 Tests run: 60
 Failures: 0
 Errors: 0
 Skipped: 0
 
 BUILD SUCCESS
-```
+
 
 Frontend verification:
 
-``` text
+
 npm run lint
 PASS
 
 npm run build
 PASS
-```
+
 
 ## Local Development
 
@@ -302,29 +302,29 @@ your local configuration.
 
 Then run:
 
-``` powershell
+ powershell
 .\mvnw spring-boot:run
-```
+
 
 Backend:
 
-``` text
+
 http://localhost:8080
-```
+
 
 ### Frontend
 
-``` bash
+ bash
 cd frontend
 npm install
 npm run dev
-```
+
 
 Frontend:
 
-``` text
+
 http://localhost:5173
-```
+
 
 ## Environment Variables
 
@@ -334,13 +334,13 @@ Do not commit credentials or secrets.
 
 Use the provided example configuration:
 
-``` text
+
 frontend/.env.example
-```
+
 
 ## Project Structure
 
-``` text
+
 assetmanagement/
 │
 ├── frontend/
@@ -382,7 +382,7 @@ assetmanagement/
 ├── mvnw.cmd
 ├── .gitignore
 └── README.md
-```
+
 
 ## Engineering Highlights
 
