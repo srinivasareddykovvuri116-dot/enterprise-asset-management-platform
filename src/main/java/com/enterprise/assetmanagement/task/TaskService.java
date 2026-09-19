@@ -417,6 +417,12 @@ public class TaskService {
     // ============================================================
     // UPDATE TASK
     // ============================================================
+    //
+    // Reachable only by ORGANIZATION_ADMIN and PROJECT_MANAGER
+    // (enforced via @PreAuthorize on the controller endpoint).
+    // Team members use updateTaskStatus() instead, so no
+    // TEAM_MEMBER branching is needed here.
+    // ============================================================
 
     @Transactional
     public TaskResponse updateTask(
@@ -485,14 +491,6 @@ public class TaskService {
         // --------------------------------------------------------
 
         if (request.assigneeId() != null) {
-
-            if (actor.getRole()
-                    == UserRole.TEAM_MEMBER) {
-
-                throw new AccessDeniedException(
-                        "Team members cannot change task assignee"
-                );
-            }
 
             User assignee =
                     getUserInOrganization(
