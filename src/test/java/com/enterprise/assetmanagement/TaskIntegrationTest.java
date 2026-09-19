@@ -676,11 +676,12 @@ class TaskIntegrationTest {
 
 
     // ============================================================
-    // TEAM MEMBER CAN UPDATE OWN TASK
+    // TEAM MEMBER CANNOT PERFORM FULL TASK UPDATE
     // ============================================================
 
     @Test
-    void teamMember_shouldUpdateOwnAssignedTask() throws Exception {
+    void teamMember_shouldNotPerformFullTaskUpdate()
+            throws Exception {
 
         JsonNode admin = registerAdmin();
 
@@ -746,6 +747,18 @@ class TaskIntegrationTest {
         );
 
 
+        /*
+         * TEAM_MEMBER is intentionally forbidden from performing
+         * full task updates.
+         *
+         * Full task updates are restricted to:
+         * - ORGANIZATION_ADMIN
+         * - PROJECT_MANAGER
+         *
+         * TEAM_MEMBER can use the dedicated status endpoint:
+         * PATCH /api/tasks/{taskId}/status
+         */
+
         mockMvc.perform(
                 put("/api/tasks/" + taskId)
                         .header(
@@ -759,11 +772,7 @@ class TaskIntegrationTest {
                                 )
                         )
         )
-        .andExpect(status().isOk())
-        .andExpect(
-                jsonPath("$.title")
-                        .value("Updated By Team Member")
-        );
+        .andExpect(status().isForbidden());
     }
 
 
@@ -953,10 +962,8 @@ class TaskIntegrationTest {
             String password) throws Exception {
 
         Map<String, Object> request = Map.of(
-                "email",
-                email,
-                "password",
-                password
+                "email", email,
+                "password", password
         );
 
 

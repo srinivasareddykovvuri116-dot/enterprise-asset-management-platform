@@ -1,0 +1,36 @@
+# Git
+.git
+.gitignore
+.gitattributes
+
+# Maven
+target/
+.mvn/wrapper/maven-wrapper.jar
+
+# Frontend dependencies/build output
+frontend/node_modules/
+frontend/dist/
+frontend/.vite/
+
+# IDE
+.idea/
+.vscode/
+*.iml
+
+# Environment/secrets
+.env
+.env.*
+!.env.example
+
+# Logs
+*.log
+debug.txt
+error.txt
+startup.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Documentation not needed for backend image
+frontend/README.md
