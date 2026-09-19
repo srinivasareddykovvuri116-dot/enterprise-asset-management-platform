@@ -1,0 +1,15 @@
+package com.enterprise.assetmanagement.audit;
+
+public enum AuditAction {
+    ORGANIZATION_CREATED,
+    USER_CREATED,
+    USER_ACTIVATED,
+    USER_SUSPENDED,
+    PROJECT_CREATED,
+    PROJECT_UPDATED,
+    PROJECT_ARCHIVED,
+    TASK_CREATED,
+    TASK_UPDATED,
+    TASK_ASSIGNED,
+    TASK_STATUS_CHANGED
+}

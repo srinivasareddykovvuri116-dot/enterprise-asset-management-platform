@@ -1,0 +1,72 @@
+# ================================
+# Spring Boot / Maven
+# ================================
+target/
+.mvn/wrapper/maven-wrapper.jar
+
+# ================================
+# Environment / Secrets
+# ================================
+.env
+.env.*
+!.env.example
+
+# ================================
+# Logs / Debug
+# ================================
+*.log
+debug.txt
+error.txt
+startup.log
+
+# ================================
+# Frontend
+# ================================
+frontend/node_modules/
+frontend/dist/
+frontend/.vite/
+
+# ================================
+# IDE
+# ================================
+.idea/
+*.iml
+*.iws
+*.ipr
+
+.vscode/
+!.vscode/extensions.json
+!.vscode/settings.json
+
+# ================================
+# Eclipse / STS
+# ================================
+.classpath
+.project
+.settings/
+.factorypath
+.apt_generated
+.springBeans
+.sts4-cache
+
+# ================================
+# NetBeans
+# ================================
+/nbproject/private/
+/nbbuild/
+/nbdist/
+/.nb-gradle/
+
+# ================================
+# OS
+# ================================
+.DS_Store
+Thumbs.db
+
+# ================================
+# Temporary files
+# ================================
+*.tmp
+*.temp
+*.swp
+*.swo
