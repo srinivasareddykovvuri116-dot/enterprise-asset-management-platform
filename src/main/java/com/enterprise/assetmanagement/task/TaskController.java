@@ -90,8 +90,15 @@ public class TaskController {
     // ============================================================
     // UPDATE TASK
     // ============================================================
+    //
+    // Full task edits (title, description, priority, due date,
+    // assignee) are restricted to organization admins and project
+    // managers. Team members must use the narrower
+    // PATCH /{taskId}/status endpoint below.
+    // ============================================================
 
     @PutMapping("/{taskId}")
+    @PreAuthorize("hasAnyRole('ORGANIZATION_ADMIN', 'PROJECT_MANAGER')")
     public ResponseEntity<TaskResponse> updateTask(
             @PathVariable Long taskId,
             @Valid @RequestBody UpdateTaskRequest request,
