@@ -2,7 +2,9 @@ import axios from "axios";
 
 const axiosClient = axios.create({
   baseURL:
-    import.meta.env.VITE_API_BASE_URL || "http://localhost:8080",
+    import.meta.env.VITE_API_BASE_URL ||
+    "http://localhost:8080",
+
   headers: {
     "Content-Type": "application/json",
   },
@@ -11,26 +13,36 @@ const axiosClient = axios.create({
 // Attach JWT to authenticated requests
 axiosClient.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem("token");
+    const isAuthRequest =
+      config.url === "/api/auth/login" ||
+      config.url === "/api/auth/register";
 
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
+    // Do not attach an old JWT to login/register requests
+    if (!isAuthRequest) {
+      const token = localStorage.getItem("token");
+
+      if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+      }
     }
 
     return config;
   },
-  (error) => Promise.reject(error)
+  (error) => {
+    return Promise.reject(error);
+  }
 );
 
 // Handle authentication failures
 axiosClient.interceptors.response.use(
-  (response) => response,
+  (response) => {
+    return response;
+  },
   (error) => {
     if (error.response?.status === 401) {
       localStorage.removeItem("token");
       localStorage.removeItem("user");
 
-      // Notify the application that authentication has expired.
       window.dispatchEvent(new Event("auth:logout"));
     }
 

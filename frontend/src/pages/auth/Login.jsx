@@ -1,32 +1,29 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
 
 import {
-  UserRound,
   Mail,
   LockKeyhole,
-  Building2,
-  UserPlus,
   AlertCircle,
-  CheckCircle2,
   Loader2,
   ShieldCheck,
+  LogIn,
 } from "lucide-react";
 
-import { registerUser } from "../../api/authApi";
+import { loginUser } from "../../api/authApi";
+import { setCredentials } from "../../store/authSlice";
 
-function Register() {
+function Login() {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const [formData, setFormData] = useState({
     email: "",
     password: "",
-    fullName: "",
-    organizationName: "",
   });
 
   const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
 
   const handleChange = (event) => {
@@ -40,26 +37,37 @@ function Register() {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+    event.stopPropagation();
 
     setError("");
-    setSuccess("");
     setLoading(true);
 
     try {
-      await registerUser(formData);
+      const response = await loginUser(formData);
 
-      setSuccess(
-        "Registration successful. Redirecting to login..."
+      console.log("Login response:", response);
+
+      const user = {
+        userId: response.userId,
+        organizationId: response.organizationId,
+        role: response.role,
+      };
+
+      dispatch(
+        setCredentials({
+          token: response.token,
+          user,
+        })
       );
 
-      setTimeout(() => {
-        navigate("/login");
-      }, 1000);
+      navigate("/dashboard", { replace: true });
     } catch (err) {
+      console.error("Login error:", err);
+
       const message =
         err.response?.data?.message ||
         err.response?.data?.error ||
-        "Registration failed. Please try again.";
+        "Login failed. Please check your credentials.";
 
       setError(message);
     } finally {
@@ -69,19 +77,11 @@ function Register() {
 
   return (
     <div className="min-h-screen bg-slate-100">
-
-      {/* ==========================================
-          MAIN
-      =========================================== */}
-
       <div className="flex min-h-screen items-center justify-center px-4 py-10">
-
         <div className="w-full max-w-lg">
 
-          {/* Branding */}
-
+          {/* Header */}
           <div className="mb-8 text-center">
-
             <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-950 text-white shadow-sm">
               <ShieldCheck size={26} />
             </div>
@@ -93,102 +93,39 @@ function Register() {
             <p className="mt-1 text-sm text-slate-500">
               Enterprise Platform
             </p>
-
           </div>
 
-          {/* Registration Card */}
-
+          {/* Login Card */}
           <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
 
-            {/* Header */}
-
             <div className="border-b border-slate-200 px-6 py-6 sm:px-8">
-
               <h2 className="text-xl font-semibold text-slate-900">
-                Create your organization
+                Welcome back
               </h2>
 
               <p className="mt-1.5 text-sm text-slate-500">
-                Set up your workspace and administrator account.
+                Sign in to access your enterprise workspace.
               </p>
-
             </div>
-
-            {/* Form */}
 
             <form
               onSubmit={handleSubmit}
               className="space-y-5 px-6 py-6 sm:px-8"
             >
-
               {/* Error */}
-
               {error && (
                 <div className="flex items-start gap-3 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
-
                   <AlertCircle
                     size={18}
                     className="mt-0.5 shrink-0"
                   />
 
                   <span>{error}</span>
-
                 </div>
               )}
-
-              {/* Success */}
-
-              {success && (
-                <div className="flex items-start gap-3 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
-
-                  <CheckCircle2
-                    size={18}
-                    className="mt-0.5 shrink-0"
-                  />
-
-                  <span>{success}</span>
-
-                </div>
-              )}
-
-              {/* Full Name */}
-
-              <div>
-
-                <label
-                  htmlFor="fullName"
-                  className="mb-2 block text-sm font-medium text-slate-700"
-                >
-                  Full Name
-                </label>
-
-                <div className="relative">
-
-                  <UserRound
-                    size={17}
-                    className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
-                  />
-
-                  <input
-                    id="fullName"
-                    name="fullName"
-                    type="text"
-                    value={formData.fullName}
-                    onChange={handleChange}
-                    placeholder="Enter your full name"
-                    autoComplete="name"
-                    required
-                    className="w-full rounded-lg border border-slate-300 bg-white py-2.5 pl-10 pr-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-slate-500 focus:ring-2 focus:ring-slate-200"
-                  />
-
-                </div>
-
-              </div>
 
               {/* Email */}
-
               <div>
-
                 <label
                   htmlFor="email"
                   className="mb-2 block text-sm font-medium text-slate-700"
@@ -197,7 +134,6 @@ function Register() {
                 </label>
 
                 <div className="relative">
-
                   <Mail
                     size={17}
                     className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
@@ -212,17 +148,14 @@ function Register() {
                     placeholder="Enter your email"
                     autoComplete="email"
                     required
-                    className="w-full rounded-lg border border-slate-300 bg-white py-2.5 pl-10 pr-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-slate-500 focus:ring-2 focus:ring-slate-200"
+                    disabled={loading}
+                    className="w-full rounded-lg border border-slate-300 bg-white py-2.5 pl-10 pr-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-slate-500 focus:ring-2 focus:ring-slate-200 disabled:bg-slate-100"
                   />
-
                 </div>
-
               </div>
 
               {/* Password */}
-
               <div>
-
                 <label
                   htmlFor="password"
                   className="mb-2 block text-sm font-medium text-slate-700"
@@ -231,7 +164,6 @@ function Register() {
                 </label>
 
                 <div className="relative">
-
                   <LockKeyhole
                     size={17}
                     className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
@@ -243,112 +175,60 @@ function Register() {
                     type="password"
                     value={formData.password}
                     onChange={handleChange}
-                    placeholder="Minimum 8 characters"
-                    autoComplete="new-password"
-                    minLength={8}
+                    placeholder="Enter your password"
+                    autoComplete="current-password"
                     required
-                    className="w-full rounded-lg border border-slate-300 bg-white py-2.5 pl-10 pr-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-slate-500 focus:ring-2 focus:ring-slate-200"
+                    disabled={loading}
+                    className="w-full rounded-lg border border-slate-300 bg-white py-2.5 pl-10 pr-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-slate-500 focus:ring-2 focus:ring-slate-200 disabled:bg-slate-100"
                   />
-
                 </div>
-
-                <p className="mt-1.5 text-xs text-slate-400">
-                  Password must contain at least 8 characters.
-                </p>
-
-              </div>
-
-              {/* Organization */}
-
-              <div>
-
-                <label
-                  htmlFor="organizationName"
-                  className="mb-2 block text-sm font-medium text-slate-700"
-                >
-                  Organization Name
-                </label>
-
-                <div className="relative">
-
-                  <Building2
-                    size={17}
-                    className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
-                  />
-
-                  <input
-                    id="organizationName"
-                    name="organizationName"
-                    type="text"
-                    value={formData.organizationName}
-                    onChange={handleChange}
-                    placeholder="Enter organization name"
-                    autoComplete="organization"
-                    required
-                    className="w-full rounded-lg border border-slate-300 bg-white py-2.5 pl-10 pr-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-slate-500 focus:ring-2 focus:ring-slate-200"
-                  />
-
-                </div>
-
               </div>
 
               {/* Submit */}
-
               <button
                 type="submit"
                 disabled={loading}
                 className="flex w-full items-center justify-center gap-2 rounded-lg bg-slate-950 px-4 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-60"
               >
-
                 {loading ? (
                   <>
                     <Loader2
                       size={17}
                       className="animate-spin"
                     />
-                    Creating...
+                    Signing in...
                   </>
                 ) : (
                   <>
-                    <UserPlus size={17} />
-                    Create Organization
+                    <LogIn size={17} />
+                    Sign In
                   </>
                 )}
-
               </button>
-
             </form>
 
-            {/* Footer */}
-
+            {/* Register */}
             <div className="border-t border-slate-200 bg-slate-50 px-6 py-5 text-center sm:px-8">
-
               <p className="text-sm text-slate-500">
-                Already have an account?{" "}
+                Don't have an account?{" "}
+
                 <Link
-                  to="/login"
+                  to="/register"
                   className="font-semibold text-slate-900 hover:underline"
                 >
-                  Sign in
+                  Create organization
                 </Link>
               </p>
-
             </div>
-
           </div>
-
-          {/* Footer */}
 
           <p className="mt-6 text-center text-xs text-slate-400">
             Secure enterprise workspace
           </p>
-
         </div>
-
       </div>
-
     </div>
   );
 }
 
-export default Register;
+export default Login;
